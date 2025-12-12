@@ -16,7 +16,7 @@ The goal is to analyze how **pretrained CLIP representations** behave under seve
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 - **Frozen CLIP (ViT-B/32) embeddings** for fast, compute-efficient FL.
 - **Flexible non-IID splitting**:
@@ -34,5 +34,4 @@ The goal is to analyze how **pretrained CLIP representations** behave under seve
 
 ---
 
-## 📂 Project Structure
 
