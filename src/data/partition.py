@@ -80,3 +80,49 @@ def quantity_and_label_skew_split(
             return parts
 
     raise RuntimeError("Failed to sample a split satisfying min_per_client within max_tries")
+
+def split_client_train_test_strict(idxs, full_dataset, test_frac, seed, num_classes):
+    """
+    Stratified per client:
+    - For this client's indices only (idxs),
+    - split per class into train/test with the SAME counts per class 
+      across all clients (because each client started from iid_split_strict).
+    """
+    rng = np.random.default_rng(seed)
+    labels = np.array(full_dataset.targets)
+
+    train_idx = []
+    test_idx  = []
+
+    for cls in range(num_classes):
+        # all this client's indices that belong to class cls
+        cls_idx = [i for i in idxs if labels[i] == cls]
+        cls_idx = np.array(cls_idx, dtype=int)
+
+        # shuffle only within this class
+        rng.shuffle(cls_idx)
+
+        n_c = len(cls_idx)
+        n_test_c = int(n_c * test_frac)   # same for all clients since n_c is the same
+        n_train_c = n_c - n_test_c
+
+        test_idx.extend(cls_idx[:n_test_c])
+        train_idx.extend(cls_idx[n_test_c:])
+
+    return np.array(train_idx, dtype=int), np.array(test_idx, dtype=int)
+
+
+def make_fewshot(train_idx, full_dataset, shots_per_class):
+    """
+    Returns only up to 'shots_per_class' samples per class 
+    from this client's training indices.
+    """
+    labels = np.array(full_dataset.targets)
+
+    selected = []
+    for cls in range(10):        # CIFAR-10 has 10 classes
+        cls_idx = [i for i in train_idx if labels[i] == cls]
+        np.random.shuffle(cls_idx)
+        selected.extend(cls_idx[:shots_per_class])  # take first K
+
+    return np.array(selected)
