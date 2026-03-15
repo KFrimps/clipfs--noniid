@@ -7,8 +7,7 @@ from torch.utils.data import DataLoader, Subset
 
 import flwr as fl
 from flwr.client import ClientApp
-from flwr.server import ServerApp, ServerConfig
-from flwr.server.app import ServerAppComponents
+from flwr.server import ServerApp, ServerConfig, ServerAppComponents
 from flwr.simulation import run_simulation
 
 from src.config import CFG
