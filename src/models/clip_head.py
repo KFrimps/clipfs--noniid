@@ -1,3 +1,6 @@
+import torch.nn as nn
+
+
 class SimpleClassifier(nn.Module):
     def __init__(self, input_dim=512, num_classes=10):
         super().__init__()

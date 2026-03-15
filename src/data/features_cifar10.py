@@ -1,3 +1,12 @@
+import torch
+from torch.utils.data import Dataset, DataLoader
+import clip
+from torchvision import datasets
+from src.config import CFG
+
+cfg = CFG()
+
+
 class FeatureDataset(Dataset):
     def __init__(self, features, targets):
         """

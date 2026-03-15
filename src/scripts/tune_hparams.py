@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.model_selection import KFold
 from torch.utils.data import DataLoader, Subset
 import torch
@@ -45,7 +46,6 @@ def tune_global_hyperparams(full_dataset, client_train_parts, cfg, make_model_fn
     print("\n[Hyperparam Tuning] Starting global CV + grid search...")
 
     # 1) Build the global train index pool (only TRAIN parts, no test)
-    import numpy as np
     all_train_indices = np.concatenate(client_train_parts)
     all_train_indices = np.array(all_train_indices, dtype=int)
 

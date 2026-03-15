@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from collections import Counter
 
 def quantity_and_label_skew_split(
@@ -20,7 +21,7 @@ def quantity_and_label_skew_split(
     Returns:
         parts: list of length k, each an np.array of indices into trainset
     """
-    rng = np.random.default_rng(cfg.seed)
+    rng = np.random.default_rng(seed)
     targets = np.array(trainset.targets)
     N = len(targets)
 
@@ -163,3 +164,7 @@ def make_fewshot(train_idx, full_dataset, shots_per_class):
         selected.extend(cls_idx[:shots_per_class])  # take first K
 
     return np.array(selected)
+
+
+# Alias for backward compatibility
+split_client_train_test = split_client_train_test_strict
