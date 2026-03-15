@@ -16,6 +16,7 @@ class CFG:
     weight_decay: float = 5e-4
     alpha_qty: float = 1.0
     alpha_label: float = 0.1
+    min_per_client: int = 100
     seed: int = 0
     num_workers: int = 2
     device: torch.device = DEVICE

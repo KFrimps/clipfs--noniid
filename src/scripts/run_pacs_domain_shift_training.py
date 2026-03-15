@@ -13,10 +13,15 @@ from src.config import CFG
 from src.utils.seed import set_seed
 from src.utils.paths import FEATURES_DIR
 from src.data.features_pacs import FeatureDataset
-from src.data.partitions_pacs import domain_skew_split, split_client_train_test
+from src.data.partitions_pacs import (
+    domain_skew_split,
+    split_client_train_test,
+    make_fewshot,
+)
 from src.models.clip_head import make_model
 from src.fl.client import Client
 from src.fl.server import LogGlobalEvalFedAvg, make_metric_logger
+from src.scripts.tune_hparams import tune_global_hyperparams
 
 def main():
     # -------------------------
@@ -38,6 +43,7 @@ def main():
     data = torch.load(feat_path)
     features = data["features"]  # [N, 512]
     labels = data["labels"]      # [N]
+    domain_indices = data["domain_indices"]  # dict: domain_name -> list of indices
 
     full_dataset = FeatureDataset(features, labels)
     print(f"Loaded feature dataset: {len(full_dataset)} samples")
@@ -58,7 +64,7 @@ def main():
     client_test_parts  = []
     
     for cid, idxs in enumerate(client_parts):
-        train_idx, test_idx = split_client_train_test_strict(
+        train_idx, test_idx = split_client_train_test(
             idxs,
             full_dataset=full_dataset,
             test_frac=0.2,
@@ -118,7 +124,7 @@ def main():
 
         model = make_model()  # small linear head
 
-        return CIFARClient(
+        return Client(
             model=model,
             train_loader=client_train_loaders[part_id],
             test_loader=client_test_loaders[part_id],

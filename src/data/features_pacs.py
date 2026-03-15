@@ -4,6 +4,10 @@ from datasets import load_dataset
 import clip
 from PIL import Image
 import numpy as np
+from src.config import CFG
+
+cfg = CFG()
+DEVICE = cfg.device
 
 class FeatureDataset(Dataset):
     def __init__(self, features, targets):

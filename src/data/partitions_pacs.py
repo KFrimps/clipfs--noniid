@@ -1,3 +1,7 @@
+import numpy as np
+import torch
+
+
 def domain_skew_split(domain_indices, n_clients, seed=0):
     """
     Splits the dataset such that each client owns specific domains.
@@ -94,3 +98,7 @@ def make_fewshot(train_idx, full_dataset, shots_per_class):
         selected.extend(cls_idx[:shots_per_class])  # take first K
 
     return np.array(selected)
+
+
+# Alias for backward compatibility
+split_client_train_test = split_client_train_test_strict

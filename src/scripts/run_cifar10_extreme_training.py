@@ -13,10 +13,15 @@ from src.config import CFG
 from src.utils.seed import set_seed
 from src.utils.paths import FEATURES_DIR
 from src.data.features_cifar10 import FeatureDataset
-from src.data.partitions_cifar10 import strict_one_class_split, split_client_train_test
+from src.data.partitions_cifar10 import (
+    strict_one_class_split,
+    split_client_train_test,
+    make_fewshot,
+)
 from src.models.clip_head import make_model
 from src.fl.client import Client
 from src.fl.server import LogGlobalEvalFedAvg, make_metric_logger
+from src.scripts.tune_hparams import tune_global_hyperparams
 
 def main():
     # -------------------------
@@ -44,18 +49,13 @@ def main():
 
     # -------------------------
     # 2. Split indices into clients
-    #    (quantity + label skew)
+    #    (strict one-class-per-client)
     # -------------------------
-    print("Splitting data into clients (quantity + label skew)...")
+    print("Splitting data into clients (strict one class per client)...")
 
-    client_parts = quantity_and_label_skew_split(
-        trainset=full_dataset,
-        k=cfg.clients,
-        alpha_qty=cfg.alpha_qty,      # e.g. 1.0
-        alpha_label=cfg.alpha_label,  # e.g. 0.1
-        min_per_client=cfg.min_per_client,
-        seed=cfg.seed,
-        max_tries=50,
+    client_parts = strict_one_class_split(
+        dataset=full_dataset,
+        n_clients=cfg.clients,
     )
 
     # Now split each client into train/test indices
@@ -63,7 +63,7 @@ def main():
     client_test_parts  = []
 
     for cid, idxs in enumerate(client_parts):
-        train_idx, test_idx = split_client_train_test_strict(
+        train_idx, test_idx = split_client_train_test(
             idxs,
             full_dataset=full_dataset,
             test_frac=0.2,
@@ -123,7 +123,7 @@ def main():
 
         model = make_model()  # small linear head
 
-        return CIFARClient(
+        return Client(
             model=model,
             train_loader=client_train_loaders[part_id],
             test_loader=client_test_loaders[part_id],
