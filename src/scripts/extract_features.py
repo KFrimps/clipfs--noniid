@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 import clip
 
-from src.utils.paths import FEATURES_DIR
+from src.utils.paths import FEATURES_DIR, DATA_DIR
 from src.config import CFG
 
 
@@ -29,8 +29,8 @@ def extract_cifar10(cfg):
     model.eval()
 
     print("Downloading/Loading CIFAR-10 dataset...")
-    train_data = datasets.CIFAR10(root="./data", train=True, download=True, transform=preprocess)
-    test_data = datasets.CIFAR10(root="./data", train=False, download=True, transform=preprocess)
+    train_data = datasets.CIFAR10(root=str(DATA_DIR), train=True, download=True, transform=preprocess)
+    test_data = datasets.CIFAR10(root=str(DATA_DIR), train=False, download=True, transform=preprocess)
 
     full_dataset = torch.utils.data.ConcatDataset([train_data, test_data])
     loader = DataLoader(full_dataset, batch_size=128, shuffle=False, num_workers=2)

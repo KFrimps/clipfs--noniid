@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 import torch
@@ -23,10 +24,26 @@ from src.fl.server import LogGlobalEvalFedAvg, make_metric_logger
 from src.scripts.tune_hparams import tune_global_hyperparams
 
 def main():
+    parser = argparse.ArgumentParser(description="PACS Domain-Shift Federated Training")
+    parser.add_argument("--clients", type=int, default=None, help="Number of federated clients")
+    parser.add_argument("--rounds", type=int, default=None, help="Number of FL communication rounds")
+    parser.add_argument("--batch-size", type=int, default=None, help="Batch size for local training")
+    parser.add_argument("--seed", type=int, default=None, help="Random seed")
+    args = parser.parse_args()
+
     # -------------------------
     # 0. Config + seed
     # -------------------------
     cfg = CFG()
+    if args.clients is not None:
+        cfg.clients = args.clients
+    if args.rounds is not None:
+        cfg.rounds = args.rounds
+    if args.batch_size is not None:
+        cfg.batch_size = args.batch_size
+    if args.seed is not None:
+        cfg.seed = args.seed
+
     set_seed(cfg.seed)
 
     # -------------------------
@@ -86,7 +103,7 @@ def main():
         full_dataset=full_dataset,
         client_train_parts=client_train_parts,
         cfg=cfg,
-        make_model_fn=make_model,   # same function you use in client_fn
+        make_model_fn=lambda: make_model(num_classes=7),
     )
 
 
@@ -121,7 +138,7 @@ def main():
     def client_fn(context: fl.common.Context):
         part_id = int(context.node_config["partition-id"])
 
-        model = make_model()  # small linear head
+        model = make_model(num_classes=7)  # PACS has 7 classes
 
         return Client(
             model=model,
@@ -134,7 +151,7 @@ def main():
     # -------------------------
     # 5. Strategy & Server
     # -------------------------
-    init_model = make_model()
+    init_model = make_model(num_classes=7)
     init_params = [v.cpu().numpy() for v in init_model.state_dict().values()]
     initial_parameters = fl.common.ndarrays_to_parameters(init_params)
 
