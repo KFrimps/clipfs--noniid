@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 import torch
@@ -23,10 +24,26 @@ from src.fl.server import LogGlobalEvalFedAvg, make_metric_logger
 from src.scripts.tune_hparams import tune_global_hyperparams
 
 def main():
+    parser = argparse.ArgumentParser(description="CIFAR-10 Extreme Non-IID Federated Training")
+    parser.add_argument("--clients", type=int, default=None, help="Number of federated clients")
+    parser.add_argument("--rounds", type=int, default=None, help="Number of FL communication rounds")
+    parser.add_argument("--batch-size", type=int, default=None, help="Batch size for local training")
+    parser.add_argument("--seed", type=int, default=None, help="Random seed")
+    args = parser.parse_args()
+
     # -------------------------
     # 0. Config + seed
     # -------------------------
     cfg = CFG()
+    if args.clients is not None:
+        cfg.clients = args.clients
+    if args.rounds is not None:
+        cfg.rounds = args.rounds
+    if args.batch_size is not None:
+        cfg.batch_size = args.batch_size
+    if args.seed is not None:
+        cfg.seed = args.seed
+
     set_seed(cfg.seed)
 
     # -------------------------

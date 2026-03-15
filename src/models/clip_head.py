@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 
@@ -11,5 +12,5 @@ class SimpleClassifier(nn.Module):
         # We assume x is float32
         return self.classifier(x)
 
-def make_model():
-    return SimpleClassifier(input_dim=512, num_classes=10)
+def make_model(num_classes=10):
+    return SimpleClassifier(input_dim=512, num_classes=num_classes)

@@ -209,3 +209,5 @@ __marimo__/
 # Project-specific
 /data/
 /runs/
+*.pt
+features/

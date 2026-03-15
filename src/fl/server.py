@@ -2,8 +2,12 @@ from pathlib import Path
 import pandas as pd
 from flwr.server.strategy import FedAvg
 
+from src.utils.paths import RUNS_DIR
 
-def make_metric_logger(out_csv="runs/global_metrics.csv"):
+
+def make_metric_logger(out_csv=None):
+    if out_csv is None:
+        out_csv = RUNS_DIR / "global_metrics.csv"
     # Turn string into a Path object
     out_csv = Path(out_csv)
 
@@ -47,8 +51,10 @@ class LogGlobalEvalFedAvg(FedAvg):
     to CSV each round. Works with clients that return:
         return loss, num_examples, {"accuracy": acc, "loss": loss}
     """
-    def __init__(self, out_csv="runs/per_client_metrics.csv", **kwargs):
+    def __init__(self, out_csv=None, **kwargs):
         super().__init__(**kwargs)
+        if out_csv is None:
+            out_csv = RUNS_DIR / "per_client_metrics.csv"
         self.out_csv = Path(out_csv)
         self.out_csv.parent.mkdir(parents=True, exist_ok=True)
 

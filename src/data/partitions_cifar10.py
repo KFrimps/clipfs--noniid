@@ -156,9 +156,10 @@ def make_fewshot(train_idx, full_dataset, shots_per_class):
     from this client's training indices.
     """
     labels = np.array(full_dataset.targets)
+    unique_classes = np.unique(labels)
 
     selected = []
-    for cls in range(10):        # CIFAR-10 has 10 classes
+    for cls in unique_classes:
         cls_idx = [i for i in train_idx if labels[i] == cls]
         np.random.shuffle(cls_idx)
         selected.extend(cls_idx[:shots_per_class])  # take first K
