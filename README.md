@@ -269,9 +269,9 @@ You can modify these defaults directly in `src/config.py`, or override them via 
 
 | Dataset   | Split Type                  | #Clients | Rounds | Expected Accuracy |
 |-----------|-----------------------------|----------|--------|-------------------|
-| CIFAR-10  | Quantity + Label skew       | 5        | 200    | ~85–90%           |
-| CIFAR-10  | Extreme (1 class/client)    | 5        | 200    | ~50–70%           |
-| PACS      | Domain shift (4 domains)    | 4        | 200    | ~70–85%           |
+| CIFAR-10  | Quantity + Label skew       | 5        | 200    | 90% <           |
+| CIFAR-10  | Extreme (1 class/client)    | 5        | 200    | 90% <          |
+| PACS      | Domain shift (4 domains)    | 4        | 200    | 90% <          |
 
 Full results are logged as CSV files in `runs/`. See [Outputs](#outputs) for the exact format.
 
